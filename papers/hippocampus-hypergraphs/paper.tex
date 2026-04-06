@@ -1,0 +1,241 @@
+% Hippocampus Hypergraph Migration: From Flat Memory to Interconnected Knowledge
+% Samuel Frerichs, Michael Clark — Are-Self Research
+\documentclass[man,12pt,floatsintext]{apa7}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codebg}{rgb}{0.95,0.95,0.97}
+\definecolor{codegreen}{rgb}{0.2,0.6,0.2}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+
+\lstset{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  captionpos=b,
+  commentstyle=\color{codegreen},
+  keywordstyle=\color{codepurple},
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codegreen},
+  frame=single,
+  numbers=left,
+}
+
+\usepackage[style=apa,backend=biber]{biblatex}
+\addbibresource{../../templates/references.bib}
+
+\title{Hippocampus Hypergraph Migration: From Flat Memory to Interconnected Knowledge}
+\shorttitle{HIPPOCAMPUS HYPERGRAPHS}
+\author{Samuel Frerichs\textsuperscript{1} and Michael Clark\textsuperscript{2}}
+\affiliation{\textsuperscript{1}University of Pittsburgh at Applied Sciences \\
+\textsuperscript{2}Independent Researcher, scipraxian}
+
+\abstract{
+Are-Self's Hippocampus module stores long-term memories as vector-embedded Engrams with
+flat many-to-many relationships to sessions, identities, and tags. While effective for
+single-fact retrieval and cosine-similarity deduplication, this flat structure cannot
+represent the rich interconnections between memories that characterize human episodic and
+semantic recall. We propose migrating the Hippocampus from flat M2M relations to a
+hypergraph structure, where Engrams become nodes and typed hyperedges represent
+relationships such as causation, temporal sequence, contradiction, elaboration, and
+generalization. We formalize the hypergraph memory model, describe a migration path that
+preserves backward compatibility with existing vector search, and analyze the expected
+improvements in contextual memory retrieval, knowledge consolidation, and reasoning
+session quality. This work extends the neuro-mimetic design principle: just as the
+biological hippocampus encodes not just facts but their interconnections, our software
+Hippocampus should do the same.
+}
+
+\keywords{knowledge graphs, hypergraph memory, vector embeddings, episodic memory,
+semantic memory, neuro-mimetic architecture}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+The human hippocampus does not store memories as isolated facts. It encodes episodes---
+temporally ordered sequences of events with causal, spatial, and emotional
+interconnections. Retrieval is associative: recalling one memory activates related
+memories through these connections, enabling reasoning by analogy, contradiction
+detection, and knowledge synthesis.
+
+Are-Self's current Hippocampus module uses a flat model: each Engram is a named fact with
+a 768-dimensional vector embedding, provenance metadata (sessions, spikes, identities),
+and tags. Retrieval is pure vector similarity: given a query, return the $K$ most
+similar engrams. This works well for factual recall but cannot answer questions like
+``What happened after the deployment failed?'' or ``Does this contradict what we learned
+yesterday?''
+
+We propose extending the Hippocampus with a hypergraph layer that preserves vector search
+while adding typed relationships between engrams.
+
+\section{Related Work}
+
+\subsection{Knowledge Graphs and Memory Systems}
+
+MemGPT \parencite{} introduces hierarchical memory tiers for LLM agents. Mem0 provides
+persistent memory with retrieval. These systems focus on storage and retrieval optimization
+but do not model inter-memory relationships.
+
+\subsection{Hypergraph Databases}
+
+Unlike standard graphs where edges connect exactly two nodes, hyperedges connect arbitrary
+sets of nodes. This is natural for memory relationships: ``these three facts together
+caused this outcome'' requires a hyperedge, not pairwise edges.
+
+\subsection{Biological Hippocampal Models}
+
+Computational neuroscience models of hippocampal memory consolidation (complementary
+learning systems theory) distinguish between rapid episodic encoding and gradual semantic
+consolidation. Our hypergraph migration maps these processes to software operations.
+
+\section{Current Architecture}
+
+\subsection{The Engram Model}
+
+% TODO: Describe current flat model in detail
+% - Fields: name (hash), description (fact), vector (768-dim), relevance_score
+% - M2M: sessions, source_turns, spikes, creator, identity_discs, tags, tasks
+% - Deduplication: cosine similarity >= 0.90 rejects save
+% - Auto-vectorization: nomic-embed-text via Ollama
+
+\subsection{Retrieval Pipeline}
+
+% TODO: Describe current vector-similarity retrieval
+% - Query vector computed at retrieval time
+% - Top-K nearest neighbors by cosine distance
+% - Filtered by creator/identity_disc access
+% - Injected into HISTORY phase of addon pipeline
+
+\subsection{Limitations of Flat Memory}
+
+% TODO: Concrete examples of limitations
+% - Cannot answer "what happened next?"
+% - Cannot detect contradictions between memories
+% - Cannot identify memory clusters (related facts)
+% - Cannot represent causal chains
+
+\section{Hypergraph Memory Model}
+
+\subsection{Formal Definition}
+
+Let $\mathcal{H} = (V, E)$ be a hypergraph where $V$ is the set of Engrams and $E$ is a
+set of typed hyperedges. Each hyperedge $e \in E$ has:
+
+\begin{itemize}
+  \item A type $\tau(e) \in \{$TEMPORAL, CAUSAL, CONTRADICTS, ELABORATES,
+        GENERALIZES, CLUSTERS$\}$
+  \item A source set $S(e) \subseteq V$
+  \item A target set $T(e) \subseteq V$
+  \item A confidence score $c(e) \in [0, 1]$
+  \item A creation context (which session/turn detected the relationship)
+\end{itemize}
+
+\subsection{Edge Type Semantics}
+
+% TODO: Define each edge type formally
+% - TEMPORAL: S happened before T
+% - CAUSAL: S caused T
+% - CONTRADICTS: S and T assert incompatible facts
+% - ELABORATES: T provides detail on S
+% - GENERALIZES: T is a generalization of S
+% - CLUSTERS: S and T belong to a semantic cluster
+
+\subsection{Automatic Edge Detection}
+
+% TODO: Algorithm for detecting relationships during engram save
+% - Temporal: session timestamps
+% - Causal: LLM-assessed from context
+% - Contradicts: high vector similarity + semantic negation
+% - Elaborates: vector similarity + substring/expansion detection
+% - Generalizes: subsumption checking
+% - Clusters: community detection on similarity graph
+
+\section{Migration Strategy}
+
+\subsection{Backward Compatibility}
+
+% TODO: How to migrate without breaking existing vector search
+% - Additive schema: new HyperedgeModel alongside existing Engram
+% - Vector search remains primary retrieval path
+% - Hypergraph traversal as optional enrichment step
+% - Gradual edge population via background task
+
+\subsection{Database Considerations}
+
+% TODO: pgvector + hypergraph edge table in PostgreSQL
+% - vs. dedicated graph database (Neo4j)
+% - Performance implications
+% - Django ORM integration
+
+\section{Enhanced Retrieval}
+
+\subsection{Context-Enriched Recall}
+
+Given a query, the enhanced retrieval pipeline:
+
+\begin{enumerate}
+  \item Standard vector-similarity top-$K$ retrieval
+  \item Hypergraph traversal from retrieved nodes (1-2 hops)
+  \item Edge-type filtering based on query intent
+  \item Re-ranking by combined vector similarity + graph centrality
+  \item Return enriched memory context with relationship annotations
+\end{enumerate}
+
+\subsection{Contradiction Detection}
+
+% TODO: Algorithm for detecting contradictions between new and existing memories
+
+\subsection{Knowledge Consolidation}
+
+% TODO: Periodic background process that:
+% - Identifies engram clusters
+% - Generates summary engrams (GENERALIZES edges)
+% - Prunes redundant edges
+% - Mirrors biological memory consolidation during "sleep"
+
+\section{Evaluation Plan}
+
+% TODO: Experimental design
+% - Retrieval relevance: flat vs. hypergraph-enriched
+% - Contradiction detection accuracy
+% - Reasoning session quality (turns to solution, memory utilization)
+% - Computational overhead of hypergraph operations
+
+\section{Discussion}
+
+The hypergraph migration extends Are-Self's neuro-mimetic principle into the memory domain.
+Just as the biological hippocampus maintains rich interconnections between memories that
+enable associative recall, our software Hippocampus will support relationship-aware
+retrieval that contextualizes individual facts within the broader knowledge landscape.
+
+\subsection{Future Work}
+
+Sleep-mode consolidation that runs during idle periods to strengthen frequently-accessed
+edges, merge redundant clusters, and generate abstract summaries. Multi-agent memory
+sharing through federated hypergraph segments. Emotional tagging via a software
+Amygdala module.
+
+\section{Conclusion}
+
+We have proposed a concrete migration path from Are-Self's flat Engram model to a
+hypergraph-based memory system that preserves vector search while adding typed
+relationships between memories. The hypergraph structure enables contextual recall,
+contradiction detection, and knowledge consolidation---capabilities that the flat model
+cannot support. This migration is planned for implementation in collaboration between the
+University of Pittsburgh at Applied Sciences and the Are-Self open-source project.
+
+\printbibliography
+
+\end{document}

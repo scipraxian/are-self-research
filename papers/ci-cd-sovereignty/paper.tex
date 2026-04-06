@@ -1,0 +1,179 @@
+% CI/CD Sovereignty: Self-Managed Build and Deployment Pipelines for Local AI Systems
+% Michael Clark — Are-Self Research
+\documentclass[man,12pt,floatsintext]{apa7}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codebg}{rgb}{0.95,0.95,0.97}
+\definecolor{codegreen}{rgb}{0.2,0.6,0.2}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+
+\lstset{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  captionpos=b,
+  commentstyle=\color{codegreen},
+  keywordstyle=\color{codepurple},
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codegreen},
+  frame=single,
+  numbers=left,
+}
+
+\usepackage[style=apa,backend=biber]{biblatex}
+\addbibresource{../../templates/references.bib}
+
+\title{CI/CD Sovereignty: Self-Managed Build and Deployment Pipelines for Local AI Systems}
+\shorttitle{CI/CD SOVEREIGNTY}
+\author{Michael Clark}
+\affiliation{Independent Researcher \\ scipraxian}
+
+\abstract{
+Cloud-hosted CI/CD services (GitHub Actions, GitLab CI, CircleCI) are effective for
+open-source projects but introduce external dependencies that conflict with Are-Self's
+local-first, privacy-preserving design philosophy. We describe how Are-Self's own
+neural pathway system can serve as a CI/CD orchestrator, executing build, test, and
+deployment pipelines as spike trains through the Central Nervous System. This approach
+eliminates cloud CI dependencies, enables AI-assisted pipeline management (the Frontal
+Lobe can reason about build failures), and maintains the system's sovereignty over its
+own infrastructure. We demonstrate pipelines for Unreal Engine game builds, shader
+compilation, automated testing, and multi-environment deployment---all orchestrated by
+the same spike-train architecture that drives Are-Self's reasoning sessions.
+}
+
+\keywords{CI/CD, local infrastructure, build automation, neural pathways, sovereignty,
+self-hosted, Unreal Engine}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+Are-Self's target users---students, educators, nonprofits---often lack access to paid
+CI/CD services or the expertise to configure complex cloud pipelines. Yet their projects
+(game development, educational tools, research code) benefit enormously from automated
+build and deployment.
+
+Are-Self already contains a generic workflow execution engine: the Central Nervous System,
+which fires spike trains through directed graphs of effector nodes. We observe that CI/CD
+pipelines are directed graphs of tasks with conditional routing---exactly the computation
+the CNS already performs.
+
+This paper describes how Are-Self's existing infrastructure doubles as a CI/CD system,
+with the unique advantage that an AI reasoning agent (the Frontal Lobe) can inspect build
+failures, suggest fixes, and adapt pipelines in real time.
+
+\section{Related Work}
+
+\subsection{Cloud CI/CD}
+
+% TODO: GitHub Actions, GitLab CI, Jenkins
+% - Strengths: ecosystem, community actions, scalability
+% - Weaknesses: external dependency, cost, privacy implications
+
+\subsection{Self-Hosted CI/CD}
+
+% TODO: Jenkins, Drone, Woodpecker, Gitea Actions
+% - Strengths: control, privacy
+% - Weaknesses: maintenance burden, no AI assistance
+
+\subsection{AI-Assisted DevOps}
+
+% TODO: GitHub Copilot for CI, AI-powered pipeline optimization
+% - Cloud-dependent, not local
+
+\section{Architecture}
+
+\subsection{Pipelines as Neural Pathways}
+
+A CI/CD pipeline maps directly to a NeuralPathway:
+
+\begin{itemize}
+  \item Pipeline stages $\rightarrow$ Neurons with Effectors
+  \item Stage ordering $\rightarrow$ Axon connections (FLOW type)
+  \item Conditional steps $\rightarrow$ SUCCESS/FAILURE axon routing
+  \item Error handling $\rightarrow$ Gate nodes (condition checking) + Retry nodes
+  \item Environment variables $\rightarrow$ Context Variables resolved per Environment
+\end{itemize}
+
+\subsection{Example: Unreal Engine Pre-Release Pipeline}
+
+% TODO: Walk through the Pre-Release pathway as a CI/CD pipeline
+% - Begin Play → Version Metadata → Backup SaveGames → Pre-Release Build → Pre-Release Run
+% - Each node as an effector wrapping a shell command
+% - Environment variable resolution (project root, build config)
+% - FAILURE routing for error handling
+
+\subsection{AI-Assisted Pipeline Management}
+
+When a build fails, the spike's FAILURE axon can route to a Frontal Lobe effector node.
+The reasoning agent receives the build log in its blackboard context, reasons about the
+failure, and can:
+
+\begin{enumerate}
+  \item Diagnose the root cause
+  \item Suggest a fix to the user via \texttt{mcp\_respond\_to\_user()}
+  \item Modify pipeline parameters for a retry
+  \item File a PFC task for manual follow-up
+\end{enumerate}
+
+\subsection{Multi-Environment Deployment}
+
+Are-Self's Environment system naturally supports multi-environment deployment:
+
+\begin{itemize}
+  \item Development, Staging, Production as separate Environments
+  \item Same pathway, different context variables per environment
+  \item Environment-scoped effector configurations
+\end{itemize}
+
+\section{Implementation}
+
+% TODO: Technical details
+% - Effector wrapping shell commands (Executable model)
+% - Blackboard propagation through pipeline stages
+% - Telemetry collection (build times, success rates via sparklines)
+% - Distribution modes for parallel builds across PNS agents
+
+\section{Evaluation}
+
+% TODO: Real-world pipeline case studies
+% - Unreal Engine game build (compile, cook, package, deploy)
+% - Django test suite execution
+% - Multi-platform shader compilation (PSO cache)
+% - Documentation site deployment
+
+\section{Discussion}
+
+\subsection{Sovereignty Benefits}
+
+No external service has access to source code, build artifacts, or deployment credentials.
+The entire pipeline runs on the same hardware as the AI reasoning engine.
+
+\subsection{Limitations}
+
+Complex CI/CD features (matrix builds, container orchestration, artifact caching) require
+additional development beyond basic pathway execution. The current system lacks native
+Git integration for trigger-on-push workflows.
+
+\section{Conclusion}
+
+Are-Self's neural pathway system provides a natural substrate for CI/CD pipelines,
+eliminating cloud dependencies while adding AI-assisted failure diagnosis. For the
+target audience of students and small organizations, this means automated builds and
+deployments without paid services, cloud accounts, or CI/CD expertise.
+
+\printbibliography
+
+\end{document}

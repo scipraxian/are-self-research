@@ -1,0 +1,73 @@
+% Are-Self Research Paper Template
+% LaTeX with APA-style formatting via apa7 class
+% Compile with: pdflatex paper.tex && biber paper && pdflatex paper.tex
+\documentclass[man,12pt,floatsintext]{apa7}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{xcolor}
+
+% Code listing style
+\definecolor{codebg}{rgb}{0.95,0.95,0.97}
+\definecolor{codegreen}{rgb}{0.2,0.6,0.2}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+
+\lstset{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  captionpos=b,
+  commentstyle=\color{codegreen},
+  keywordstyle=\color{codepurple},
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codegreen},
+  frame=single,
+  numbers=left,
+}
+
+% Bibliography
+\usepackage[style=apa,backend=biber]{biblatex}
+\addbibresource{references.bib}
+
+% Paper metadata — replace these
+\title{Paper Title Here}
+\shorttitle{SHORT TITLE}
+\author{Michael Clark}
+\affiliation{Independent Researcher \\ scipraxian}
+
+\abstract{
+Your abstract here. 150--250 words summarizing the contribution.
+}
+
+\keywords{are-self, neuro-mimetic, autonomous AI, local inference}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+Your introduction here.
+
+\section{Related Work}
+
+\section{Architecture}
+
+\section{Implementation}
+
+\section{Evaluation}
+
+\section{Discussion}
+
+\section{Conclusion}
+
+\printbibliography
+
+\end{document}

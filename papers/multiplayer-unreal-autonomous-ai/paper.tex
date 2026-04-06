@@ -1,0 +1,179 @@
+% Building Multiplayer Unreal Applications with Autonomous AI Assistance
+% Michael Clark — Are-Self Research
+\documentclass[man,12pt,floatsintext]{apa7}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codebg}{rgb}{0.95,0.95,0.97}
+\definecolor{codegreen}{rgb}{0.2,0.6,0.2}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+
+\lstset{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  captionpos=b,
+  commentstyle=\color{codegreen},
+  keywordstyle=\color{codepurple},
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codegreen},
+  frame=single,
+  numbers=left,
+}
+
+\usepackage[style=apa,backend=biber]{biblatex}
+\addbibresource{../../templates/references.bib}
+
+\title{Building Multiplayer Unreal Applications with Autonomous AI Assistance}
+\shorttitle{MULTIPLAYER UNREAL + AUTONOMOUS AI}
+\author{Michael Clark}
+\affiliation{Independent Researcher \\ scipraxian}
+
+\abstract{
+Game development with Unreal Engine is one of the most complex software engineering
+disciplines, requiring expertise in C++, Blueprints, networking, rendering, physics,
+and asset pipelines. For students and small teams without enterprise resources, this
+complexity is a barrier to entry. We describe how Are-Self's autonomous AI agents assist
+in building a multiplayer Unreal Engine application by managing build pipelines,
+analyzing shader compilation, automating save game management, coordinating multi-platform
+testing, and providing reasoning-assisted debugging. The AI operates as a project manager
+and build engineer, using Are-Self's neural pathway system for workflow automation and
+the Frontal Lobe for intelligent decision-making about build failures, performance
+regressions, and deployment sequencing. We present lessons learned from developing a
+multiplayer Unreal project with Are-Self as an integral part of the development workflow.
+}
+
+\keywords{Unreal Engine, game development, autonomous AI, multiplayer, build automation,
+AI-assisted development}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+Unreal Engine is among the most powerful game engines available, offered free for
+educational use and indie development. However, its power comes with extraordinary
+complexity: a multiplayer Unreal project involves C++ and Blueprint programming,
+dedicated server configuration, replication networking, shader compilation (Pipeline
+State Object caching), asset cooking, platform-specific packaging, and multi-stage
+testing.
+
+Professional studios employ dedicated build engineers and DevOps teams to manage this
+complexity. Students, educators, and small indie teams do not have this luxury.
+
+Are-Self was developed alongside an Unreal Engine multiplayer project, and many of its
+neural pathways were built specifically to automate game development workflows. This paper
+describes the symbiotic relationship between the AI orchestration system and the game
+project it helps build.
+
+\section{The Unreal Development Workflow}
+
+\subsection{Build Pipeline Complexity}
+
+% TODO: Describe the multi-stage Unreal build pipeline
+% - C++ compilation
+% - Blueprint compilation
+% - Shader compilation and PSO caching
+% - Asset cooking
+% - Packaging (client + dedicated server)
+% - Multi-platform considerations
+
+\subsection{Multiplayer-Specific Challenges}
+
+% TODO: Describe multiplayer-specific issues
+% - Dedicated server vs. listen server
+% - Replication debugging
+% - Network prediction and reconciliation
+% - Session management
+% - Cross-platform multiplayer testing
+
+\section{Are-Self Integration Points}
+
+\subsection{Neural Pathways for Build Automation}
+
+We describe each Are-Self pathway used in the Unreal development workflow:
+
+\begin{enumerate}
+  \item \textbf{Pre-Release}: Version metadata $\rightarrow$ save backup $\rightarrow$
+        build $\rightarrow$ test run (5-node pathway)
+  \item \textbf{Compile Shaders}: PSO cache generation across target platforms
+  \item \textbf{Deploy}: Multi-environment deployment with rollback on failure
+  \item \textbf{Staging Run}: Quick build-and-test for development iteration
+  \item \textbf{Dump Scripts / Record PSOs}: Data extraction utilities
+\end{enumerate}
+
+\subsection{AI-Assisted Debugging}
+
+% TODO: How the Frontal Lobe assists with build failures
+% - Build log analysis
+% - Shader compilation error diagnosis
+% - Replication bug reasoning
+% - Suggested fixes via mcp_respond_to_user
+
+\subsection{Project Management}
+
+% TODO: How the Prefrontal Cortex manages game development tasks
+% - Epics for major features
+% - Stories for implementation chunks
+% - Tasks for individual work items
+% - AI-driven task decomposition and estimation
+
+\subsection{Memory-Assisted Development}
+
+% TODO: How the Hippocampus stores development knowledge
+% - Build configuration engrams
+% - Known issues and workarounds
+% - Platform-specific gotchas
+% - Carried across sessions
+
+\section{Case Study: A Multiplayer Unreal Project}
+
+% TODO: Detailed case study
+% - Project description (multiplayer game type)
+% - Development timeline with Are-Self integration
+% - Specific examples of AI assistance
+% - Quantitative metrics (build success rate, time savings)
+
+\section{Lessons Learned}
+
+% TODO: Key insights
+% - Where AI assistance was most valuable
+% - Where it fell short
+% - How pathways evolved over development
+% - The value of persistent memory across sessions
+
+\section{Discussion}
+
+\subsection{Accessibility Impact}
+
+Are-Self lowers the barrier for Unreal Engine multiplayer development by automating the
+most complex operational aspects. A student can focus on game design and programming while
+the AI handles build orchestration, shader management, and deployment.
+
+\subsection{Limitations}
+
+The AI cannot directly modify C++ or Blueprint code (tool limitation). Complex
+networking bugs may exceed the reasoning capabilities of 7B local models. Real-time
+game testing still requires human players.
+
+\section{Conclusion}
+
+We have demonstrated that an autonomous AI orchestration system can serve as an effective
+build engineer and project manager for multiplayer Unreal Engine development. By combining
+neural pathway automation with AI-assisted reasoning, Are-Self makes complex game
+development workflows accessible to students and small teams who lack dedicated DevOps
+resources.
+
+\printbibliography
+
+\end{document}

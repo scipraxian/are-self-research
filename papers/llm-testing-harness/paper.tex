@@ -1,0 +1,216 @@
+% A Testing Harness for Local LLM Evaluation in Neuro-Mimetic Systems
+% Michael Clark — Are-Self Research
+\documentclass[man,12pt,floatsintext]{apa7}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codebg}{rgb}{0.95,0.95,0.97}
+\definecolor{codegreen}{rgb}{0.2,0.6,0.2}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+
+\lstset{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  captionpos=b,
+  commentstyle=\color{codegreen},
+  keywordstyle=\color{codepurple},
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codegreen},
+  frame=single,
+  numbers=left,
+}
+
+\usepackage[style=apa,backend=biber]{biblatex}
+\addbibresource{../../templates/references.bib}
+
+\title{A Testing Harness for Local LLM Evaluation in Neuro-Mimetic Systems}
+\shorttitle{LLM TESTING HARNESS}
+\author{Michael Clark}
+\affiliation{Independent Researcher \\ scipraxian}
+
+\abstract{
+Evaluating local language models for autonomous agent workflows presents unique challenges:
+models must be tested not just for generation quality but for tool-calling reliability,
+format compliance, context window utilization, and behavior under the resource constraints
+of consumer hardware. Standard LLM benchmarks (MMLU, HumanEval, etc.) measure general
+capability but do not predict whether a model will function correctly as an autonomous
+agent in a structured orchestration system. We describe a testing harness built within
+Are-Self's architecture that evaluates models against agent-specific criteria: tool call
+format compliance, multi-turn consistency, focus budget efficiency, memory formation
+quality, and graceful degradation under context pressure. The harness leverages Are-Self's
+existing execution infrastructure---spike trains, reasoning sessions, and telemetry---to
+run evaluation suites as standard pathways, enabling continuous model assessment as new
+quantizations and fine-tunes become available via Ollama.
+}
+
+\keywords{LLM evaluation, local inference, tool calling, autonomous agents, model testing,
+Ollama, quantization effects}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+The local LLM ecosystem evolves rapidly. New models, quantizations, and fine-tunes appear
+weekly on Ollama, Hugging Face, and similar platforms. For systems like Are-Self that
+depend on models functioning as autonomous agents---calling tools, managing context,
+forming memories---each new model requires evaluation along dimensions that standard
+benchmarks do not measure.
+
+A model that scores well on MMLU may hallucinate tool names. A model that excels at
+HumanEval may fail to format tool calls in the JSON schema expected by the orchestrator.
+A model that handles single-turn generation beautifully may degenerate across 50 turns
+of multi-turn reasoning.
+
+We present a testing harness that evaluates models within the actual orchestration
+environment, measuring the capabilities that matter for autonomous agent operation.
+
+\section{Related Work}
+
+\subsection{Standard LLM Benchmarks}
+
+% TODO: Survey of MMLU, HumanEval, MATH, BigBench
+% - What they measure
+% - Why they don't predict agent performance
+
+\subsection{Agent-Specific Evaluation}
+
+% TODO: Survey of AgentBench, ToolBench, MINT
+% - Closer to our needs but designed for cloud models
+% - Don't account for quantization artifacts
+
+\subsection{Local Model Evaluation}
+
+% TODO: Existing approaches to evaluating quantized/local models
+% - Perplexity comparisons across quantizations
+% - Task-specific leaderboards
+% - Gap: no agent-workflow-specific evaluation for local models
+
+\section{Evaluation Dimensions}
+
+\subsection{Tool Call Compliance}
+
+Does the model emit tool calls in the expected format? We test:
+
+\begin{enumerate}
+  \item Correct JSON structure for function calls
+  \item Tool name accuracy (no hallucinated tool names)
+  \item Parameter type compliance (string vs. integer vs. boolean)
+  \item Required parameter inclusion
+  \item Graceful handling of tool results
+\end{enumerate}
+
+Are-Self's Parietal Lobe (hallucination armor) already validates tool calls; the harness
+measures the rate at which calls pass validation.
+
+\subsection{Multi-Turn Consistency}
+
+Over $N$ turns, does the model:
+
+\begin{enumerate}
+  \item Maintain coherent task focus
+  \item Reference previous turns accurately
+  \item Avoid contradicting its own earlier statements
+  \item Converge toward task completion
+  \item Use the Focus Economy efficiently
+\end{enumerate}
+
+\subsection{Memory Formation Quality}
+
+When granted access to memory tools, does the model:
+
+\begin{enumerate}
+  \item Save facts with appropriate granularity (not too broad, not too specific)
+  \item Avoid duplicate saves (testing the model's own dedup awareness, independent of
+        the Hippocampus's cosine threshold)
+  \item Retrieve relevant memories when contextually appropriate
+  \item Build on previous memories in subsequent sessions
+\end{enumerate}
+
+\subsection{Context Window Utilization}
+
+As the context fills over multiple turns:
+
+\begin{enumerate}
+  \item At what fill percentage does quality degrade?
+  \item Does the model handle the River of Six addon's age-decayed history correctly?
+  \item Can it distinguish fresh context from aged context?
+\end{enumerate}
+
+\subsection{Quantization Effects}
+
+For a given model family (e.g., Llama 3.1), compare across quantizations:
+
+\begin{enumerate}
+  \item q4\_0 vs. q4\_K\_M vs. q5\_K\_M vs. q8\_0 vs. fp16
+  \item At what quantization level do tool calls become unreliable?
+  \item Does quantization affect multi-turn consistency differently than single-turn quality?
+\end{enumerate}
+
+\section{Harness Architecture}
+
+\subsection{Test Suites as Neural Pathways}
+
+% TODO: How test suites are implemented as CNS pathways
+% - Each test case is an effector in a pathway
+% - Spike blackboard carries test parameters
+% - Results collected via spike status + telemetry
+% - Standard Are-Self execution infrastructure (no separate test runner)
+
+\subsection{Evaluation Metrics}
+
+% TODO: Define formal metrics
+% - Tool Call Accuracy (TCA): valid calls / total calls
+% - Focus Efficiency (FE): task progress / focus consumed
+% - Memory Precision (MP): relevant saves / total saves
+% - Context Degradation Curve: quality vs. context fill %
+% - Turns to Solution (TTS): fewer is better
+
+\subsection{Automated Scoring}
+
+% TODO: How scoring works
+% - Deterministic checks (JSON format, tool name existence)
+% - LLM-as-judge for quality metrics (using a known-good model)
+% - Statistical aggregation across multiple runs
+% - Variance analysis for reliability
+
+\section{Evaluation}
+
+% TODO: Results across model families
+% - Llama 3.1 (7B, 13B, 70B) across quantizations
+% - Gemma 2/4 series
+% - Mistral/Mixtral
+% - Qwen 2.5 series
+% - Phi-3/4 series
+% - Focus on 7B models (target hardware constraint)
+
+\section{Discussion}
+
+% TODO: Key findings
+% - Which models work best as Are-Self agents?
+% - Surprising quantization effects
+% - Recommendations for model selection
+% - How the Hypothalamus's model routing can use harness results
+
+\section{Conclusion}
+
+We have presented a testing harness that evaluates local LLMs along the dimensions that
+matter for autonomous agent operation: tool calling, multi-turn consistency, memory
+formation, and context utilization. By implementing the harness within Are-Self's own
+execution infrastructure, evaluations run in the exact environment where models will
+operate, producing results that directly predict real-world agent performance.
+
+\printbibliography
+
+\end{document}

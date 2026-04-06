@@ -1,0 +1,323 @@
+% Neuro-Mimetic Architecture: A Brain-Inspired Framework for Autonomous AI Orchestration
+% Michael Clark — Are-Self Research
+\documentclass[man,12pt,floatsintext]{apa7}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codebg}{rgb}{0.95,0.95,0.97}
+\definecolor{codegreen}{rgb}{0.2,0.6,0.2}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+
+\lstset{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  captionpos=b,
+  commentstyle=\color{codegreen},
+  keywordstyle=\color{codepurple},
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codegreen},
+  frame=single,
+  numbers=left,
+}
+
+\usepackage[style=apa,backend=biber]{biblatex}
+\addbibresource{../../templates/references.bib}
+
+\title{Neuro-Mimetic Architecture: A Brain-Inspired Framework for Autonomous AI Orchestration}
+\shorttitle{NEURO-MIMETIC ARCHITECTURE}
+\author{Michael Clark}
+\affiliation{Independent Researcher \\ scipraxian}
+
+\abstract{
+We present Are-Self, an open-source AI orchestration framework whose software architecture
+mirrors the functional organization of the human brain. Each component in the system maps
+to a neuroanatomical region and performs an analogous computational role: the Central
+Nervous System executes directed-graph workflows via spike trains, the Frontal Lobe
+conducts multi-turn reasoning sessions with large language models, the Hippocampus
+maintains vector-embedded long-term memory with cosine-similarity deduplication, and the
+Hypothalamus routes inference requests through failover strategies with circuit-breaker
+protection. Unlike metaphorical ``brain-inspired'' systems that borrow terminology without
+structural correspondence, Are-Self enforces a strict mapping between software modules and
+brain regions, yielding a system that is simultaneously teachable to novice users and
+extensible for advanced workflows. We describe the architecture, the tick-cycle execution
+model, the addon-based prompt assembly pipeline, and the real-time event system
+(Synaptic Cleft) that eliminates polling. The system runs entirely on consumer hardware
+via Ollama, requires no API keys for core operation, and is MIT licensed. We evaluate
+the architecture's expressiveness by demonstrating multi-step autonomous workflows
+including code deployment, game build pipelines, and multi-agent reasoning swarms.
+}
+
+\keywords{neuro-mimetic architecture, autonomous AI, local inference, swarm reasoning,
+brain-inspired computing, Ollama, open-source AI}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+The dominant paradigm for AI application frameworks treats language models as stateless
+function calls: prompt in, completion out. Systems like LangChain, AutoGen, and CrewAI
+provide abstractions for chaining these calls, but their architectures bear no structural
+relationship to the cognitive processes they attempt to replicate. The result is frameworks
+that are powerful but opaque---debugging a failing agent chain requires understanding
+implementation-specific abstractions rather than intuitive mental models.
+
+We propose a different approach: organize the entire orchestration system around the
+functional architecture of the human brain. Not as metaphor, but as a strict structural
+mapping where each software module corresponds to a neuroanatomical region and performs
+an analogous computational role.
+
+Are-Self implements this principle as a Django application suite where every app is a
+brain region. The Central Nervous System fires spike trains through directed graphs of
+neurons. The Frontal Lobe runs multi-turn reasoning loops. The Hippocampus stores
+vector-embedded memories. The Hypothalamus selects and routes models. The Temporal Lobe
+schedules work iterations. The Parietal Lobe executes tools. The Prefrontal Cortex
+manages projects.
+
+This paper makes three contributions:
+
+\begin{enumerate}
+  \item A formal description of the neuro-mimetic architecture and its mapping to
+        neuroanatomy (Section~\ref{sec:architecture}).
+  \item The tick-cycle execution model that drives autonomous operation
+        (Section~\ref{sec:execution}).
+  \item An evaluation of the architecture's expressiveness across real-world autonomous
+        workflows (Section~\ref{sec:evaluation}).
+\end{enumerate}
+
+\subsection{Design Constraints}
+
+Are-Self is designed for a specific user: a 10-year-old with no money, no powerful GPU,
+and no computer science degree. Every architectural decision flows from this constraint.
+The system must be free (MIT licensed), local (no cloud dependency), private (no data
+leaves the machine), and comprehensible (the brain metaphor must aid understanding, not
+obscure it).
+
+\section{Related Work}
+
+\subsection{Agent Orchestration Frameworks}
+
+LangChain \parencite{} provides a chain-of-thought abstraction for LLM applications.
+AutoGen \parencite{} introduces multi-agent conversation patterns. CrewAI defines
+role-based agent teams. These frameworks excel at composability but lack structural
+correspondence to cognitive processes.
+
+\subsection{Brain-Inspired Computing}
+
+Neuromorphic hardware (Intel Loihi, IBM TrueNorth) implements spiking neural networks
+in silicon. These systems operate at the neuron level; Are-Self operates at the
+brain-region level, mapping functional areas rather than individual neurons.
+
+\subsection{Cognitive Architectures}
+
+SOAR and ACT-R provide production-rule cognitive models. Are-Self differs in targeting
+practical AI orchestration rather than cognitive simulation, and in using modern LLMs
+as the reasoning substrate rather than symbolic rule systems.
+
+\section{Architecture}
+\label{sec:architecture}
+
+\subsection{Brain Region Mapping}
+
+Table~\ref{tab:regions} shows the mapping between Are-Self's Django applications and
+their neuroanatomical counterparts.
+
+% TODO: Insert table of brain regions -> Django apps -> computational roles
+
+\subsection{Central Nervous System}
+
+The CNS is a generic directed-graph executor. It knows nothing about reasoning, memory,
+or language models---it simply fires spikes through neural pathways.
+
+A \textbf{NeuralPathway} is a directed acyclic graph of \textbf{Neurons} connected by
+\textbf{Axons}. Each Neuron wraps an \textbf{Effector}---a configured action that can
+execute locally or be distributed across the Peripheral Nervous System. Axons are typed
+by \textbf{AxonType}: FLOW (unconditional), SUCCESS (on success), or FAILURE (on failure).
+
+A \textbf{SpikeTrain} represents a single traversal of a pathway. When started, the CNS
+identifies root neurons (those with no incoming axons) and fires \textbf{Spikes} into them
+via Celery tasks. Each spike carries a \textbf{blackboard}---a JSON dictionary that
+accumulates data as the train traverses the graph. When a spike completes, the CNS examines
+outgoing axons and dispatches the next wave.
+
+\subsection{Frontal Lobe}
+
+The Frontal Lobe runs \textbf{ReasoningSessions}---async while-true loops that call an LLM,
+parse tool calls, execute them via the Parietal Lobe, and iterate until the agent calls
+\texttt{mcp\_done()} or exhausts its focus budget.
+
+Prompt assembly uses a four-phase \textbf{addon pipeline}:
+
+\begin{enumerate}
+  \item \textbf{IDENTIFY} --- renders the identity's system prompt template
+  \item \textbf{CONTEXT} --- injects environment variables, focus/XP telemetry
+  \item \textbf{HISTORY} --- reconstructs recent turns via the River of Six addon
+  \item \textbf{TERMINAL} --- appends the task prompt and ``your move'' invitation
+\end{enumerate}
+
+\subsection{Hippocampus}
+
+Long-term memory as 768-dimensional pgvector embeddings. The Hippocampus stores
+\textbf{Engrams}---named facts with vector embeddings, tags, relevance scores, and
+full provenance (which session created them, which spikes triggered them, which identity
+owns them).
+
+Deduplication uses cosine similarity: if a new engram is $\geq 90\%$ similar to an
+existing one, the save is rejected with a pointer to the duplicate.
+
+\subsection{Hypothalamus}
+
+Model selection and routing. The Hypothalamus maintains a catalog of models, providers,
+pricing, and capabilities. When the Frontal Lobe needs an LLM, it calls
+\texttt{pick\_optimal\_model()}, which walks a \textbf{FailoverStrategy} tree:
+preferred model $\rightarrow$ family matching (via vector similarity between identity
+and model embeddings) $\rightarrow$ local Ollama fallback $\rightarrow$ strict failure.
+
+Circuit breakers implement exponential cooldown on failed providers.
+
+\subsection{Identity System}
+
+Personas with leveling. An \textbf{Identity} is a blueprint; an \textbf{IdentityDisc}
+is a deployed instance with XP, level, success/failure counts, and a 768-dim vector
+embedding for semantic model matching. Every 100 XP grants a level. Levels unlock
+additional focus budget.
+
+\subsection{Temporal Lobe}
+
+Scheduling via \textbf{Iterations} divided into \textbf{Shifts}. Each shift has a turn
+limit and assigned participants (IdentityDiscs). The Temporal Lobe's metronome
+(Celery Beat) ticks periodically, advancing shifts when turn limits are reached.
+
+\subsection{Parietal Lobe}
+
+Tool execution with \textbf{hallucination armor}. The Parietal Lobe validates tool calls
+against registered \textbf{ToolDefinitions}, checking parameter types and required fields
+before execution. Invalid calls return structured error messages rather than crashing.
+
+\subsection{Prefrontal Cortex}
+
+Project management: Epics $\rightarrow$ Stories $\rightarrow$ Tasks, with status
+workflows (NEEDS\_REFINEMENT through DONE), ownership tracking, and comment threads.
+
+\subsection{Synaptic Cleft}
+
+Real-time event bus via Django Channels. Five neurotransmitter types---Dopamine (success),
+Cortisol (error), Acetylcholine (data sync), Glutamate (streaming), Norepinephrine
+(monitoring)---broadcast events to the React frontend via WebSocket. The frontend's
+\texttt{useDendrite()} hook subscribes to specific receptor classes, triggering refetches
+when signals fire. This eliminates all polling.
+
+\subsection{Peripheral Nervous System}
+
+Fleet management. NerveTerminal agents register with the system, report telemetry
+(CPU, memory, storage), and receive distributed spike executions. Four distribution modes:
+local, all agents, one available agent, or specific targets.
+
+\section{The Tick Cycle}
+\label{sec:execution}
+
+Everything in Are-Self serves one loop:
+
+\begin{enumerate}
+  \item PNS (Celery Beat) ticks every $N$ seconds
+  \item Temporal Lobe wakes active iteration, selects current shift
+  \item CNS builds SpikeTrain, fires through neural pathway
+  \item Spikes cascade through neurons, executing effectors
+  \item Frontal Lobe starts reasoning session (if invoked by Frontal Lobe effector)
+  \item Parietal Lobe executes tool calls; Hippocampus stores/retrieves memories;
+        Hypothalamus selects models
+  \item Session concludes; neurotransmitter fires
+  \item Next shift tick
+\end{enumerate}
+
+This cycle enables fully autonomous operation: the system reasons, uses tools, forms
+memories, and manages its own work without human intervention, bounded only by the
+Focus Economy's budget constraints.
+
+\section{The Focus Economy}
+
+A critical design element that prevents unbounded execution. Each reasoning session begins
+with a focus budget ($10 + 0.5 \times (\text{level} - 1)$). Every turn and tool call
+decrements focus. Novel memory formation (engram saves with novelty $> 10\%$) grants
+focus back. When focus reaches zero, the session must conclude.
+
+This creates an incentive structure: the agent is rewarded for \emph{learning} (saving
+novel memories) and penalized for verbosity (consuming turns without learning). An
+additional efficiency bonus grants +1 focus and 5 XP when output stays under
+$\text{level} \times 1000$ characters.
+
+\section{Evaluation}
+\label{sec:evaluation}
+
+We evaluate the architecture along three dimensions: expressiveness (can it represent
+real-world workflows?), comprehensibility (does the brain metaphor aid understanding?),
+and performance (does it run on consumer hardware?).
+
+\subsection{Expressiveness}
+
+% TODO: Case studies of real pathways
+% - Pre-Release build pipeline (5-node, multi-step)
+% - Agent scanning and deployment
+% - Temporal Lobe scheduled reasoning iterations
+
+\subsection{Comprehensibility}
+
+% TODO: User study or qualitative analysis
+% - Teaching the system to non-programmers
+% - Time to first successful pathway
+
+\subsection{Performance}
+
+% TODO: Benchmarks on consumer hardware
+% - Spike train execution times
+% - Reasoning session latency with 7B models via Ollama
+% - Memory overhead of vector operations
+
+\section{Discussion}
+
+\subsection{Why Not Just a Metaphor?}
+
+Many systems use brain terminology loosely. Are-Self's strict mapping enforces a
+discipline: if a new feature doesn't map to a brain region, it likely belongs in an
+existing one. This constraint prevents architectural drift and maintains the system's
+teachability.
+
+\subsection{Limitations}
+
+The architecture currently supports one active iteration per environment. The Peripheral
+Nervous System lacks sophisticated health monitoring. The Hippocampus uses flat M2M
+relationships rather than the hypergraph structure proposed by Frerichs for richer
+memory interconnection.
+
+\subsection{Future Work}
+
+PNS expansion to multiple Ollama endpoints with live agent telemetry. Hippocampus
+migration to hypergraph engrams. Image and audio generation as first-class effectors.
+MCP (Model Context Protocol) server and client integration for cross-system tool sharing.
+
+\section{Conclusion}
+
+Are-Self demonstrates that organizing an AI orchestration framework around the functional
+architecture of the human brain yields a system that is simultaneously intuitive for
+beginners and powerful for advanced users. The strict mapping between software modules and
+brain regions provides a natural vocabulary for discussing system behavior, a principled
+guide for architectural decisions, and an extensible foundation for future capabilities.
+
+The system runs entirely on consumer hardware, requires no API keys for core operation,
+and is MIT licensed---making autonomous AI accessible to anyone with a laptop and
+curiosity.
+
+\printbibliography
+
+\end{document}

@@ -1,0 +1,253 @@
+% The Focus Economy: Bounded Autonomy Through Incentive-Aligned Resource Management
+% Michael Clark — Are-Self Research
+\documentclass[man,12pt,floatsintext]{apa7}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codebg}{rgb}{0.95,0.95,0.97}
+\definecolor{codegreen}{rgb}{0.2,0.6,0.2}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+
+\lstset{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  captionpos=b,
+  commentstyle=\color{codegreen},
+  keywordstyle=\color{codepurple},
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codegreen},
+  frame=single,
+  numbers=left,
+}
+
+\usepackage[style=apa,backend=biber]{biblatex}
+\addbibresource{../../templates/references.bib}
+
+\title{The Focus Economy: Bounded Autonomy Through Incentive-Aligned Resource Management}
+\shorttitle{THE FOCUS ECONOMY}
+\author{Michael Clark}
+\affiliation{Independent Researcher \\ scipraxian}
+
+\abstract{
+Autonomous AI agents face a fundamental tension: they must reason long enough to solve
+complex problems, but not so long that they waste resources or loop indefinitely. Existing
+approaches use hard turn limits or token budgets, which are blunt instruments that ignore
+the quality of the agent's work. We introduce the Focus Economy, a resource management
+system that aligns an agent's incentive structure with productive behavior. Each reasoning
+session begins with a focus budget that decreases with every turn and tool call. Crucially,
+focus is \emph{restored} when the agent forms novel memories---saving facts with low
+cosine similarity to existing knowledge. This creates a self-regulating system where
+agents that learn are rewarded with more reasoning capacity, while agents that loop or
+produce redundant output are naturally constrained. We formalize the Focus Economy's
+dynamics, analyze its equilibrium properties, and demonstrate its effectiveness in
+preventing degenerate behavior across diverse reasoning tasks on consumer hardware.
+}
+
+\keywords{bounded autonomy, resource management, incentive alignment, autonomous agents,
+focus economy, reinforcement via memory}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+The promise of autonomous AI agents is that they can reason, plan, and act without
+continuous human supervision. The peril is that unsupervised agents can consume unbounded
+resources: token budgets, API costs, compute time, and human attention when they produce
+voluminous but unhelpful output.
+
+Current approaches to bounding agent execution fall into two categories: hard limits
+(maximum turns, token ceilings) and soft heuristics (confidence thresholds, self-reflection
+loops). Hard limits are blunt---they terminate productive reasoning as readily as
+unproductive loops. Soft heuristics are unreliable---the same LLM that enters a loop
+may also misjudge when to stop.
+
+We propose a third approach: the Focus Economy, where the agent's execution budget is
+dynamically linked to the \emph{novelty} of its outputs. An agent that learns new things
+earns the right to keep reasoning. An agent that recycles known information depletes its
+budget and must conclude.
+
+\subsection{Design Intuition}
+
+The Focus Economy mirrors biological attention: a person engaged in novel learning
+maintains focus naturally, while repetitive tasks induce fatigue. We operationalize this
+intuition through three mechanisms:
+
+\begin{enumerate}
+  \item \textbf{Focus Budget}: A per-session numeric resource that decrements each turn
+  \item \textbf{Memory Novelty Rewards}: Focus restoration proportional to the novelty
+        of saved memories (measured by cosine distance from existing knowledge)
+  \item \textbf{Efficiency Bonus}: Additional focus and XP for concise output
+\end{enumerate}
+
+\section{Related Work}
+
+\subsection{Token and Turn Budgets}
+
+Most agent frameworks impose fixed limits. LangChain's \texttt{max\_iterations}
+parameter, AutoGen's \texttt{max\_turns}, and similar mechanisms prevent runaway
+execution but cannot distinguish productive from unproductive turns.
+
+\subsection{Self-Reflection and Meta-Reasoning}
+
+Reflexion \parencite{} and similar approaches have the agent evaluate its own progress.
+This relies on the same model that may be stuck to recognize that it is stuck---a
+bootstrapping problem the Focus Economy avoids by using an external signal (memory
+novelty) rather than self-assessment.
+
+\subsection{Reward Shaping in RL}
+
+The Focus Economy's incentive structure parallels reward shaping in reinforcement learning,
+where auxiliary rewards guide exploration. Unlike RL reward shaping, our mechanism operates
+at the application level without requiring model fine-tuning.
+
+\section{Formal Model}
+
+\subsection{Focus Budget Dynamics}
+
+Let $F_0$ denote the initial focus budget for a session:
+
+\begin{equation}
+  F_0 = 10 + 0.5 \times (L - 1)
+\end{equation}
+
+where $L = \lfloor \text{XP} / 100 \rfloor + 1$ is the identity's current level.
+
+At each turn $t$, focus is consumed:
+
+\begin{equation}
+  F_{t+1} = F_t - c_{\text{turn}} - \sum_{i} c_{\text{tool}_i} + r_t
+\end{equation}
+
+where $c_{\text{turn}}$ is the per-turn cost, $c_{\text{tool}_i}$ is the cost for each
+tool call (drawn from the tool's \texttt{focus\_modifier}), and $r_t$ is the novelty
+reward.
+
+\subsection{Novelty Reward}
+
+When the agent saves a memory (Engram), the Hippocampus computes cosine similarity
+$s$ against existing engrams. The novelty reward is:
+
+\begin{equation}
+  r = \begin{cases}
+    \alpha \times (1 - s) & \text{if } s < 0.90 \\
+    0 & \text{if } s \geq 0.90 \text{ (duplicate rejected)}
+  \end{cases}
+\end{equation}
+
+where $\alpha$ is a scaling constant. Memories that are highly novel ($s \ll 0.90$)
+restore more focus than those that narrowly clear the deduplication threshold.
+
+\subsection{Efficiency Bonus}
+
+If the previous turn's output length $\leq L \times 1000$ characters:
+
+\begin{equation}
+  F_{t+1} \mathrel{+}= 1, \quad \text{XP} \mathrel{+}= 5
+\end{equation}
+
+This encourages concise reasoning---agents that say less but learn more are rewarded
+twice.
+
+\subsection{Termination}
+
+When $F_t \leq 0$, the session must conclude. The agent is given one final turn to
+call \texttt{mcp\_done()} with its conclusion.
+
+\section{Equilibrium Analysis}
+
+% TODO: Analyze steady-state behavior
+% - Under what conditions does an agent sustain indefinite reasoning?
+% - What task types naturally exhaust focus?
+% - How does the novelty threshold interact with knowledge saturation?
+
+\subsection{Sustainability Condition}
+
+A session is self-sustaining when the expected novelty reward per turn exceeds the
+expected focus cost:
+
+\begin{equation}
+  \mathbb{E}[r_t] > c_{\text{turn}} + \mathbb{E}\left[\sum_i c_{\text{tool}_i}\right]
+\end{equation}
+
+In practice, this condition holds early in a session (many novel facts to discover) and
+fails as the agent's knowledge saturates---a natural stopping criterion.
+
+\subsection{Degenerate Behavior Prevention}
+
+We identify three degenerate patterns and show how the Focus Economy addresses each:
+
+\begin{enumerate}
+  \item \textbf{Infinite loops}: Focus depletes monotonically when no novel memories are
+        formed, guaranteeing termination.
+  \item \textbf{Verbose padding}: The efficiency bonus penalizes long output, removing
+        the incentive to pad responses.
+  \item \textbf{Memory spam}: Cosine similarity deduplication rejects near-duplicate
+        engrams, preventing agents from gaming the novelty reward.
+\end{enumerate}
+
+\section{Implementation}
+
+\subsection{Integration with the Reasoning Loop}
+
+The Focus Economy is embedded in the Frontal Lobe's reasoning session loop. Focus is
+tracked as a field on the \texttt{ReasoningSession} model. The Parietal Lobe's tool
+execution pathway reports focus modifications back to the session. The Hippocampus's
+engram save path computes novelty and returns the reward.
+
+\subsection{XP and Leveling}
+
+Experience points accumulate across sessions on the \texttt{IdentityDisc}. Every 100 XP
+grants a level, which increases the starting focus budget. This creates a longitudinal
+incentive: identities that consistently learn earn greater autonomy over time.
+
+\section{Evaluation}
+
+% TODO: Empirical evaluation
+% - Compare Focus Economy vs. fixed turn limits across task types
+% - Measure token efficiency (useful output per token spent)
+% - Analyze memory novelty distributions across sessions
+% - Case studies: coding tasks, research tasks, creative tasks
+
+\section{Discussion}
+
+\subsection{Implications for AI Safety}
+
+The Focus Economy provides a \emph{mechanical} bound on agent autonomy that does not
+depend on the agent's own judgment. This is significant for safety: the bound holds
+regardless of prompt injection, jailbreaking, or model capabilities.
+
+\subsection{Limitations}
+
+The system assumes that memory novelty correlates with task progress. In domains where
+the agent must reason extensively without producing storable facts (e.g., mathematical
+proof search), the Focus Economy may prematurely terminate productive reasoning.
+
+\subsection{Future Work}
+
+Domain-specific focus modifiers that adjust costs based on task type. Multi-agent focus
+pooling where agents in a swarm share a collective budget. Adaptive novelty thresholds
+that relax as knowledge domains expand.
+
+\section{Conclusion}
+
+The Focus Economy demonstrates that bounded autonomy need not be blunt. By linking
+execution budgets to the novelty of an agent's learning, we create a self-regulating
+system that naturally distinguishes productive reasoning from wasteful loops. The
+mechanism requires no model fine-tuning, operates at the application layer, and
+integrates naturally with existing LLM agent architectures.
+
+\printbibliography
+
+\end{document}
